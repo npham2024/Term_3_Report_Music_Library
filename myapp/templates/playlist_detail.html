@@ -1,0 +1,151 @@
+<!-- myapp/templates/playlist_detail.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ playlist.playlist_name }}</title>
+    <style>
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Heading */
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #444;
+        }
+
+        /* Song List Styling */
+        ul {
+            list-style-type: none;
+            padding: 0;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        li {
+            background-color: #fff;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Remove Button */
+        form {
+            display: inline;
+        }
+
+        button {
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            font-size: 0.9em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #c0392b;
+        }
+
+        /* Add Song Form */
+        h2 {
+            font-size: 1.5em;
+            margin-top: 20px;
+            color: #444;
+        }
+
+        form select {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            margin-right: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .add-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .add-button:hover {
+            background-color: #45a049;
+        }
+
+        /* Back Link Styling */
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+            color: #388e3c;
+        }
+    </style>
+</head>
+<body>
+    {% load custom_filters %}
+    <h1>Songs in "{{ playlist.playlist_name }}"</h1>
+
+    <!-- List Songs with Remove Button -->
+    <ul>
+        {% for song in songs %}
+            <li>
+                <span>{{ song.song_title }} - {{ song.duration|format_duration }}</span>
+                <form action="{% url 'remove_song_from_playlist' playlist_id=playlist.playlist_id song_id=song.song_id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit">Remove</button>
+                </form>
+            </li>
+        {% empty %}
+            <li>No songs in this playlist.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Add Song to Playlist Form -->
+    <h2>Add a Song to Playlist</h2>
+    <form action="{% url 'add_song_to_playlist' playlist_id=playlist.playlist_id %}" method="post">
+        {% csrf_token %}
+        <select name="song_id">
+            {% for song in all_songs %}
+                <option value="{{ song.song_id }}">{{ song.song_title }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit" class="add-button">Add Song</button>
+    </form>
+
+    <a href="{% url 'home' %}" class="back-link">Back to Playlists</a>
+</body>
+</html>
